@@ -1,0 +1,8 @@
+version: '3'
+services:
+  core_api:
+      build: .
+      image: api-login:latest
+      container_name: api-login-container
+      ports:
+          - "80:80"

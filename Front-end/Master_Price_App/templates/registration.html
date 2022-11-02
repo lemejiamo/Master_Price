@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Register - PriceMaster0-1</title>
+    <link rel="stylesheet" href="{{ url_for('static' , filename='/assets/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="manifest" href="{{ url_for('static' , filename='manifest.json') }}">
+    <link rel="stylesheet" href="{{ url_for('static' , filename='/assets/css/Montserrat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static' , filename='/assets/fonts/simple-line-icons.min.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static' , filename='/assets/css/vanilla-zoom.min.css') }}">
+</head>
+
+<body>
+    <nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+        <div class="container"><a class="navbar-brand logo" href="/index">Master Price</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navcol-1">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="/index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/product-page">Product</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/about-us">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/contact-us">Contact Us</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="/login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/registration">Register</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <main class="page registration-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Registration</h2>
+                    <p>Be part of the club, and shop cheaper</p>
+                </div>
+
+
+                <form  action="/registration" method="post">
+
+<!----------------------JINJA SECTION ------------------------>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="alert alert-danger" role="alert">
+                                    {{ message}}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success d-flex align-items-center" role="alert">
+                                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-  label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                                    <div>
+                                        {{ message }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+
+                    <div class="mb-3">
+                        <label class="form-label" for="name">Name</label>
+                        <input class="form-control item" type="text" id="name" name="name">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Password</label>
+                        <input class="form-control item" type="password" id="password" name="password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="password">Repeat Password</label>
+                        <input class="form-control item" type="password" id="repeat_password" name="repeat_password">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="email">Email</label>
+                        <input class="form-control item" type="email" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="Celphone">Celphone</label>
+                        <input class="form-control item" type="tel" id="celphone" name="cel">
+                    </div>
+
+                    <button class="btn btn-primary" type="submit">Sign Up</button>
+                </form>
+            </div>
+        </section>
+    </main><!-- Start: Footer Dark -->
+    <footer class="page-footer dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-3">
+                    <h5>Get started</h5>
+                    <ul>
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">Sign up</a></li>
+                    </ul>
+                </div>
+                <div class="col-sm-3">
+                    <h5>About us</h5>
+                    <ul>
+                        <li><a href="#">Company Information</a></li>
+                        <li><a href="#">Contact us</a></li>
+                        <li><a href="#">Reviews</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-copyright">
+            <p>© 2022 Copyright Text</p>
+        </div>
+    </footer><!-- End: Footer Dark -->
+    <script src="{{ url_for('static' , filename='/assets/bootstrap/js/bootstrap.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.11.1/baguetteBox.min.js"></script>
+    <script src="{{ url_for('static' , filename='/assets/js/vanilla-zoom.js') }}"></script>
+    <script src="{{ url_for('static' , filename='/assets/js/theme.js') }}"></script>
+</body>
+
+</html>
