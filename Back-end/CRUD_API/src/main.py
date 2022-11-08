@@ -12,8 +12,8 @@ settings = Settings()
 
 app = FastAPI(
     title="CRUD API",
-    description="API for CRUD operations in a Firebase DB",
-    version="0.1.0",
+    description="API for CRUD operations",
+    version="0.1.5",
 )
 
 app.add_middleware(
@@ -33,7 +33,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=settings.PORT,
+        port=5300,
         debug=True,
         reload=True,
         reload_delay=1.5,

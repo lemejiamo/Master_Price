@@ -1,18 +1,61 @@
 import datetime
-from datetime import date
 from utils.hashing_util import hash_attribute
 from typing import Optional
-from repositories.standar_repository import (
-    Get_Category_From_Collection_Repository,
-    create_object_repository,
-    delete_object_repository,
-    get_all_objects_repository,
-    get_object_by_email_repository,
-    get_object_repository,
-    get_objects_by_name,
-    update_object_repository,
-    update_password_repository,
-)
+from interfaces.repository_interface import Repo_Interface
+from .special_services import create_user_object_service
+
+def create_object_service(object_model: any, class_name: Optional = None):
+    """
+    Get persistence of an object in db
+    Args:
+        object_model: model to save in DB
+        class_name: class of the model
+
+    Returns:
+        response: confirmation of transaction
+        data: retrieve the data of th e saved object
+    """
+    # Define the model of the object
+    if class_name == None:
+        class_name = object_model.__class__.__name__
+
+    # to create a user
+    if class_name == 'Users':
+        response, object_data = create_user_object_service(object_model)
+        if response:
+            return response, object_data
+        return response, None
+
+    # to create any other model
+    else:
+        object_model = dict(object_model)
+        # adds creation timestamp
+        date = datetime.datetime.now()
+        object_model['date_create'] = date.strftime("%m/%d/%Y, %H:%M:%S:%f")
+        object_model['updated'] = object_model['date_create']
+
+        # prepare the string to hash
+        str_to_hash = object_model['name']+object_model['date_create']
+
+        # check by email if the user already exists
+        if class_name != 'Products':
+            object, response = get_object_by_email_service(object_model['email'],
+                                                           class_name)
+        else:
+            object = None
+
+        if object is None:
+            id = hash_attribute(str_to_hash, "md5")
+            object_model['id'] = id
+            response, object_data = Repo_Interface.create_object_repository(object_model, id, class_name)
+
+            if response:
+                return response, object_data
+            return response, None
+
+        else:
+            return {"user": "already exists"}, None
+
 
 def get_all_objects_service(class_name: str, **filter_by):
     """
@@ -23,7 +66,7 @@ def get_all_objects_service(class_name: str, **filter_by):
     Returns:
         id_list: list of dicts with the data of the objects
     """
-    result = get_all_objects_repository(class_name, **filter_by)
+    result = Repo_Interface.get_all_objects_repository(class_name, **filter_by)
     id_list = []
     if result == None:
         return  id_list
@@ -46,7 +89,7 @@ def get_object_service(id: str, class_name: str):
     return data
 
 
-def get_object_by_email_service(email: str, class_name: str):
+def get_object_by_email_service(email: str, class_name: str, category: str = None):
     """
     Get a single record from database searching by email
     Args:
@@ -55,50 +98,8 @@ def get_object_by_email_service(email: str, class_name: str):
     Returns:
         data: a Dict with the data of the object
     """
-    user, result = get_object_by_email_repository(email, class_name)
-    return user, result
-
-
-def create_object_service(object_model: any, class_name: Optional = None):
-    """
-    Get persistence of an object in db
-    Args:
-        object_model: model to save in DB
-        class_name: class of the model
-
-    Returns:
-        response: confirmation of transaction
-        data: retrieve the data of th e saved object
-    """
-
-    # Define the model of the object
-    if class_name == None:
-        class_name = object_model.__class__.__name__
-    object_model = dict(object_model)
-
-    # adds creation timestamp
-    date = datetime.datetime.now()
-    object_model['date_load'] = date.strftime("%m/%d/%Y, %H:%M:%S:%f")
-    object_model['date_update'] = object_model['date_load']
-
-    # prepare the string to hash
-    str_to_hash = object_model['name']+object_model['date_load']
-
-    # check by email if the user already exists
-    if class_name != 'Products':
-        object, check_exist = get_object_by_email_service(object_model['email'], class_name)
-    else:
-        object = None
-
-    if object is None:
-        id = hash_attribute(str_to_hash, "md5")
-        object_model['id'] = id
-        response, object_data = create_object_repository(object_model, id, class_name)
-        if response:
-            return response, object_data
-        return response, None
-    else:
-        return {"user": "already exists"}, None
+    object_data, response = Repo_Interface.get_object_by_email_repository(email, class_name, category)
+    return object_data, response
 
 
 def delete_object_service(id: str, class_name: str):

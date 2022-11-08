@@ -11,5 +11,5 @@ class Company(BaseModel):
     telephone: Union[int, None]
     cellphone: Union[str, None]
     rating: Union[int, None]
-    date_load: Union[datetime, None]
-    date_update: Union[datetime, None]
+    date_create: Union[datetime, None]
+    updated: Union[datetime, None]

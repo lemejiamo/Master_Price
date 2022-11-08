@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from . import mongo_db
 
-def create_object_repository(object: any, id: str, class_name: Optional = None) -> bool:
+def create_object_mongo_repository(object: any, id: str, class_name: Optional = None) -> bool:
     """
     CRUD method to create a API USER in MONGODB
     """
@@ -15,20 +15,46 @@ def create_object_repository(object: any, id: str, class_name: Optional = None) 
         collection = object.__class__.__name__
     else:
         collection = class_name
+
     try:
-        db_collection = mongo_db[collection][object.category]
-        object['date_load'] = datetime.now()
-        object['date_update'] = object['date_load']
+
+        if object['category'] != None:
+            db_collection = mongo_db[collection][object['category']]
+        else:
+            db_collection = mongo_db[collection]
+
         object_data = jsonable_encoder(object)
         db_collection.insert_one(object)
         final_obj = {str(id): object_data}
         return True, final_obj
+
     except Exception as ex:
         logging.error(f"cant created user error: {ex}")
         return False
 
+def get_object_by_email_mongo_repository(email: str, class_name: str, category: str = None):
+    """
+    CRUD method for get a user by id
+    """
+    output_formats = [{ '_id':0, 'id':0, 'password':0}]
+    if category:
+        collection = mongo_db[class_name][category]
+    else:
+        collection = mongo_db[class_name]
 
-def get_all_objects_repository(class_name: str, **filter_by):
+    try:
+        filter = {'email': email}
+        object = collection.find_one(filter, output_formats[0])
+        print(object)
+        return  True, object
+
+    except HTTPException as ex:
+        logging.error(f"At get_user_by_id_repository: {ex}")
+        return False, None
+
+
+
+def get_all_objects_mongo_repository(class_name: str, **filter_by):
     """
     CRUD method to retrive all objects of a certain collection
     Args:
@@ -52,7 +78,7 @@ def get_all_objects_repository(class_name: str, **filter_by):
         return None
 
 
-def get_object_repository(id: str, class_name: str):
+def get_object_mongo_repository(id: str, class_name: str):
     """
     Args:
         id: unique id from the given user
@@ -69,7 +95,7 @@ def get_object_repository(id: str, class_name: str):
         return None
 
 
-def delete_object_repository(id: str, class_name: str) -> bool:
+def delete_object_mongo_repository(id: str, class_name: str) -> bool:
     try:
         ref = db.reference(f"/{class_name}/{id}", db_app)
         data = ref.get()
@@ -85,31 +111,7 @@ def delete_object_repository(id: str, class_name: str) -> bool:
         return False
 
 
-def get_object_by_email_repository(email: str, class_name: str):
-    """
-    CRUD method for get a user by id
-    """
-    try:
-        ref = db.reference(f"{class_name}", db_app)
-        all_results = dict(ref.order_by_child("email").equal_to(email).get())
-        if all_results is None or all_results == {}:
-            return None, True
-        json_user = {
-            list(all_results.keys())[0]: all_results[list(all_results.keys())[0]]
-        }
-        return json_user, True
-    except HTTPException as ex:
-        logging.error(f"At get_user_by_id_repository: {ex}")
-        return None, False
-    except firebase_admin.exceptions.InvalidArgumentError as arg_error:
-        logging.error(f"Error en el argumento de busqueda email {email}")
-        return None, True
-
-def update_object_repository(
-    object: any,
-    id: str,
-    class_name: str,
-):
+def update_object_mongo_repository(object: any, id: str, class_name: str,):
 
     check_exits = get_object_repository(
         id,
@@ -137,11 +139,7 @@ def update_object_repository(
         )
 
 
-def update_password_repository(
-    object: any,
-    id: str,
-    class_name: str,
-):
+def update_password_mongo_repository(object: any, id: str, class_name: str):
 
     check_exits = get_object_repository(
         id,
@@ -171,7 +169,7 @@ def update_password_repository(
         )
 
 
-def get_objects_by_name(class_name: str, product_name: str):
+def get_objects_by_mongo_name(class_name: str, product_name: str):
     ref = db.reference(f"/{class_name}/", db_app)
     results_by_name = ref.order_by_child("name").equal_to(product_name).get()
     if results_by_name is None or results_by_name == {}:
@@ -179,7 +177,7 @@ def get_objects_by_name(class_name: str, product_name: str):
     return results_by_name, True
 
 
-def Get_Category_From_Collection_Repository(class_name: str):
+def Get_Category_From_Collection_mongo_Repository(class_name: str):
     ref = db.reference(f"/{class_name}/", db_app)
     result = ref.get()
     category_list = []

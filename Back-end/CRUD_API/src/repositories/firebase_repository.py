@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Optional
-
+from typing import Optional, Union
 import firebase_admin.exceptions
 from fastapi import HTTPException, status
 from fastapi.encoders import jsonable_encoder
@@ -9,7 +8,7 @@ from fastapi.responses import JSONResponse
 
 from . import db, db_app
 
-def create_object_repository(object: any, id: str, class_name: Optional = None) -> bool:
+def create_object_firebase_repository(object: any, id: str, class_name: Optional = None) -> Union[bool, any]:
     """
     CRUD method to create a API USER
     """
@@ -30,7 +29,7 @@ def create_object_repository(object: any, id: str, class_name: Optional = None) 
         return False
 
 
-def get_all_objects_repository(class_name: str, **filter_by):
+def get_all_objects_firebase_repository(class_name: str, **filter_by):
     """
     CRUD method to retrive all objects of a certain collection
     Args:
@@ -54,7 +53,7 @@ def get_all_objects_repository(class_name: str, **filter_by):
         return None
 
 
-def get_object_repository(id: str, class_name: str):
+def get_object_firebase_repository(id: str, class_name: str):
     """
     Args:
         id: unique id from the given user
@@ -71,7 +70,7 @@ def get_object_repository(id: str, class_name: str):
         return None
 
 
-def delete_object_repository(id: str, class_name: str) -> bool:
+def delete_object_firebase_repository(id: str, class_name: str) -> bool:
     try:
         ref = db.reference(f"/{class_name}/{id}", db_app)
         data = ref.get()
@@ -87,7 +86,7 @@ def delete_object_repository(id: str, class_name: str) -> bool:
         return False
 
 
-def get_object_by_email_repository(email: str, class_name: str):
+def get_object_by_email_firebase_repository(email: str, class_name: str, category: str = None):
     """
     CRUD method for get a user by id
     """
@@ -107,13 +106,13 @@ def get_object_by_email_repository(email: str, class_name: str):
         logging.error(f"Error en el argumento de busqueda email {email}")
         return None, True
 
-def update_object_repository(
+def update_object_firebase_repository(
     object: any,
     id: str,
     class_name: str,
 ):
 
-    check_exits = get_object_repository(
+    check_exits = get_object_firebase_repository(
         id,
         class_name,
     )
@@ -139,13 +138,13 @@ def update_object_repository(
         )
 
 
-def update_password_repository(
+def update_password_firebase_repository(
     object: any,
     id: str,
     class_name: str,
 ):
 
-    check_exits = get_object_repository(
+    check_exits = get_object_firebase_repository(
         id,
         class_name,
     )
@@ -173,7 +172,7 @@ def update_password_repository(
         )
 
 
-def get_objects_by_name(class_name: str, product_name: str):
+def get_objects_by_name_firebase_repository(class_name: str, product_name: str):
     ref = db.reference(f"/{class_name}/", db_app)
     results_by_name = ref.order_by_child("name").equal_to(product_name).get()
     if results_by_name is None or results_by_name == {}:
@@ -181,7 +180,7 @@ def get_objects_by_name(class_name: str, product_name: str):
     return results_by_name, True
 
 
-def Get_Category_From_Collection_Repository(class_name: str):
+def get_category_from_collection_firebase_repository(class_name: str):
     ref = db.reference(f"/{class_name}/", db_app)
     result = ref.get()
     category_list = []

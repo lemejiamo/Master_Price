@@ -9,9 +9,9 @@ class Users(BaseModel):
     email: Union[str, None] = Field()
     cel: Union[str, None]
     password: Union[str, None]
-    type: Union[int, None] = 1  # 1 standar User 2 Company
-    date_load: Union[str, None]
-    date_update: Union[str, None]
+    date_create: Union[str, None]
+    updated: Union[str, None]
+    category: Union[str, None] = 'user'
 
 
 class UpdatePassword(BaseModel):

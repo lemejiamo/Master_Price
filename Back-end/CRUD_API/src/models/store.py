@@ -10,5 +10,5 @@ class Store(BaseModel):
     address: Union[str, None]
     user_id: Union[str, None]
     company_id: Union[str, None]
-    date_load: Union[datetime, None]
-    date_update: Union[datetime, None]
+    date_create: Union[datetime, None]
+    updated: Union[datetime, None]

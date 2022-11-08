@@ -13,5 +13,5 @@ class Settings:
     ALLOW_CREDENTIALS: str = os.getenv("ALLOW_CREDENTIALS")
     ALLOW_METHODS: str = os.getenv("ALLOW_METHODS")
     ALLOW_HEADERS: str = os.getenv("ALLOW_HEADERS")
-    PORT: int = os.getenv("HOST_PORT")
+    PORT: int = os.getenv('HOST_PORT')
     HOST: str = os.getenv('HOST')

@@ -3,15 +3,8 @@ from fastapi import APIRouter, Header, status
 from fastapi.responses import JSONResponse
 from clients.login import validate_token_client
 from models.user import UpdatePassword, Users
-from services.standar_services import (
-    create_object_service,
-    delete_object_service,
-    get_all_objects_service,
-    get_object_by_email_service,
-    get_object_service,
-    update_object_service,
-    update_password_service,
-)
+from services.standar_services import *
+
 
 class_name = "Users"
 
@@ -26,19 +19,17 @@ router = APIRouter(
     status_code=status.HTTP_200_OK,
     summary="get all users records from database",
 )
-def get_all_controller(
-        logintoken: Optional[str] = Header(...),
-        key: Union[str, None] = None,
-        value: Optional[str] = None):
+def get_all_controller(logintoken: Optional[str] = Header(...),key: Union[str, None] = None,value: Optional[str] = None):
     """
     get all store records from database
     Args:
-        logintoken: Required to verify that the user is valid
+        login-token: Required to verify that the user is valid
         key: optional filter field
         value: required if key, filter by value
     Returns:
         JSON Response
     """
+
     validate_token_client(logintoken)
 
     if key is not None and value is not None:
@@ -67,26 +58,7 @@ def get_all_controller(
             content=data,
         )
 
-# @router.get(
-#     "/id/{user_id}",
-#     status_code=status.HTTP_200_OK,
-#     summary="get a single user record from database",
-# )
-# def get_one_controller(user_id: str, logintoken: str = Header(...)):
-#     """
-#     get a single user record from database
-#     Args:
-#         user_id (str): user's user id
-#     Returns:
-#         JSON Response
-#     """
-#     validate_token_client(logintoken)
-#     data = get_object_service(user_id, class_name)
-#     if data is not None:
-#         return JSONResponse(status_code=status.HTTP_200_OK, content=data)
-#     return JSONResponse(status_code=status.HTTP_204_NO_CONTENT, content=data)
-#
-#
+
 @router.get(
     "/email/{email}",
     status_code=status.HTTP_200_OK,
@@ -100,7 +72,8 @@ def get_by_email_controller(email: str):
     Returns:
         JSON Response
     """
-    object_data, result = get_object_by_email_service(email, class_name)
+    category = 'user'
+    object_data, result = get_object_by_email_service(email, class_name, category)
 
     if result is False:
         return JSONResponse(
@@ -124,9 +97,7 @@ def get_by_email_controller(email: str):
     status_code=status.HTTP_201_CREATED,
     summary="create a single user record in database",
 )
-def create_controller(
-        data: Users
-):
+def create_controller(data: Users):
     """
     create a single user record in database
     Args:
@@ -139,12 +110,13 @@ def create_controller(
     if response and object_data:
         return JSONResponse(
             status_code=status.HTTP_201_CREATED,
+            # todo cambiar el timpo de contenido no veo la necesidad de retornar el usuario
             content=object_data,
         )
     elif response and object_data is None:
         return JSONResponse(
             status_code=status.HTTP_406_NOT_ACCEPTABLE,
-            content={"user": "Already exists"},
+            content={"user": "Already exists a user with this email"},
         )
 
 
@@ -153,11 +125,7 @@ def create_controller(
     status_code=status.HTTP_202_ACCEPTED,
     summary="update a single user record in database",
 )
-def update_password_controller(
-        user_id: str,
-        data: UpdatePassword,
-        logintoken: str = Header(...)
-):
+def update_password_controller(user_id: str, data: UpdatePassword, logintoken: str = Header(...)):
     """
     update a single user record in database
     Args:
@@ -184,11 +152,7 @@ def update_password_controller(
     status_code=status.HTTP_202_ACCEPTED,
     summary="update a single user record in database",
 )
-def update_controller(
-    id: str,
-    data: class_name,
-    logintoken: str = Header(...)
-):
+def update_controller(id: str, data: class_name, logintoken: str = Header(...)):
     """
     update a single user record in database
     Args:
@@ -209,15 +173,13 @@ def update_controller(
             content=response
         )
 
+
 @router.delete(
     "/delete/id/{user_id}",
     status_code=status.HTTP_202_ACCEPTED,
     summary="delete a single user record in database",
 )
-def delete_controller(
-        user_id: str,
-        logintoken: str = Header(...)
-):
+def delete_controller(user_id: str, logintoken: str = Header(...)):
     """
     delete a single user record in database
     Args:
