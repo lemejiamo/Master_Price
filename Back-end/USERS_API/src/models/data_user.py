@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Union
-
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 class TokenCreateModel(BaseModel):
@@ -19,14 +18,15 @@ class LoginModel(BaseModel):
     password: Union[str, None]
 
 
-class UserModel(LoginModel):
-    cel: Union[str, None]
-    date_load: Union[str, None]
-    date_update: Union[str, None]
-    email: Union[EmailStr, None]
-    name: Union[str, None]
-    type: Union[int, None] = 1
-
-
 class ChangePasswordModel(LoginModel):
     new_password: Union[str, None]
+
+
+class UserModel(BaseModel):
+    name: Union[str, None] = Field()
+    email: Union[EmailStr, None] = Field()
+    cel: Union[str, None]
+    password: Union[str, None]
+    date_create: Union[str, None]
+    updated: Union[str, None]
+    category: Union[str, None] = 'user'

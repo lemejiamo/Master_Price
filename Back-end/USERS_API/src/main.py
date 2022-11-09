@@ -10,7 +10,7 @@ settings = Settings()
 app = FastAPI(
     title="Login API",
     description="API to login a user",
-    version="0.1.0",
+    version="0.1.5",
 )
 
 app.add_middleware(

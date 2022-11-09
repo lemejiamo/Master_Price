@@ -2,7 +2,7 @@ from fastapi import APIRouter, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from models.user import ChangePasswordModel, LoginModel, TokenCreateModel, UserModel
+from models.data_user import ChangePasswordModel, LoginModel, TokenCreateModel, UserModel
 from services.user import (
     create_token_service,
     login_service,
@@ -34,6 +34,7 @@ def login_controller(data: LoginModel):
         JSON Response
     """
     json_response = login_service(data)
+
     if type(json_response) is str:
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": json_response}
@@ -84,30 +85,6 @@ def update_password_controller(
         )
     else:
         return json_response
-
-
-@router.post(
-    "/token/",
-    status_code=status.HTTP_202_ACCEPTED,
-    summary="Create a valid login token for the app",
-)
-def create_token_controller(
-    token_object: TokenCreateModel,
-):
-    """
-    Create a new token for the user
-    Args:
-        token_object (TokenCreateModel): user's info required for the token
-    Returns:
-        JSON Response
-    """
-    user_id = token_object.user_id
-    raw_data = jsonable_encoder(token_object)
-    json_data = {}
-    json_data[user_id] = raw_data
-    token = create_token_service(json_data, user_id)
-    return token
-
 
 @router.get(
     "/token/validate/{token}",
